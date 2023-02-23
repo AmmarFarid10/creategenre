@@ -1,0 +1,45 @@
+#!/bin/bash.
+mongod > /dev/null 2>&1 &
+sleep 5
+go run main.go  > /dev/null 2>&1 &
+printf "\nServer starting......\n"
+curl -s --location --request POST 'https://ed-5146363240644608.educative.run/genres/creategenre' \
+--header 'token: ' \
+ --data-raw ''  &> log.txt
+while :
+do
+   if grep "Your app refused to connect." < log.txt > waste.txt; then
+      i=1
+curl -s --location --request POST 'https://ed-5146363240644608.educative.run/genres/creategenre' \
+--header 'token: ' \
+ --data-raw ''  &> log.txt
+   else
+   break
+   fi
+done
+printf "\nSending Request\n"
+value=$(curl -s --location --request POST 'https://ed-5146363240644608.educative.run/users/login' \
+ --data-raw '{
+ "Email":"bob001@gmail.com", 
+ "Password":"Bob123"
+ }') &> waste.txt
+token=$(echo "$value" | jq '.token')
+token1=$(echo "$token" | sed -e 's/^"//' -e 's/"$//')
+# creating genre
+#curl -s --location --request POST "https://ed-5146363240644608.educative.run/genres/creategenre" \
+#--header "token: $token1" \
+# --data-raw '{
+# "Name":"sample1"
+# }'  | jq &> log.txt
+ #curl -s --location --request POST "https://ed-5146363240644608.educative.run/genres/creategenre" \
+#--header "token: $token1" \
+# --data-raw '{
+# "Name":"sample1"
+# }'  | jq &> log.txt 
+printf "\nSending Request\n"
+curl -s --location --request POST "https://ed-5146363240644608.educative.run/genres/creategenre" \
+--header "token: $token1" \
+ --data-raw '{
+ "Name":"Genre1",
+ "genre_id":4
+ }'  | jq
